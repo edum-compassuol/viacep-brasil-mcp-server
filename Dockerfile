@@ -2,7 +2,7 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files and install dependencies including dev dependencies
 COPY package*.json ./
 RUN npm ci
 
@@ -19,7 +19,10 @@ WORKDIR /app
 
 # Copy package files and install production dependencies only
 COPY package*.json ./
-RUN npm ci --omit=dev
+
+# Disable prepare script which tries to run build again
+RUN npm pkg delete scripts.prepare && \
+    npm ci --omit=dev
 
 # Copy built files from builder stage
 COPY --from=builder /app/build ./build
