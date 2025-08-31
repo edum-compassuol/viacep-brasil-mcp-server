@@ -5,8 +5,18 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, "..");
 
 const server = new Server(
   {
@@ -16,6 +26,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
     },
   }
 );
@@ -113,6 +124,47 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     default:
       throw new Error(`Unknown tool: ${request.params.name}`);
   }
+});
+
+// Set up the resource handlers
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  return {
+    resources: [
+      {
+        uri: "readme://viacep",
+        name: "ViaCEP README",
+        description: "Documentation for the ViaCEP MCP Server",
+        mimeType: "text/markdown",
+      }
+    ],
+  };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const uri = request.params.uri;
+
+  // Handle README resource
+  if (uri === "readme://viacep") {
+    try {
+      const readmePath = path.join(projectRoot, "README.md");
+      const content = fs.readFileSync(readmePath, "utf-8");
+      
+      return {
+        contents: [
+          {
+            uri: "readme://viacep",
+            text: content,
+            mimeType: "text/markdown",
+          }
+        ]
+      };
+    } catch (error: any) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to read README.md: ${errorMessage}`);
+    }
+  }
+
+  throw new Error(`Resource not found: ${uri}`);
 });
 
 async function main() {
