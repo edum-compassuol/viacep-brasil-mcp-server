@@ -35,7 +35,12 @@ jobs:
         run: npm run build
 
       - name: Publish to GitHub Packages
-        run: npm publish
+        run: |
+          if ! npm view @edum-compassuol/viacep-brasil-mcp-server@0.1.0 &>/dev/null; then
+            npm publish
+          else
+            echo "Package already published, skipping..."
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
