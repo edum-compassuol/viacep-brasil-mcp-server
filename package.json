@@ -1,8 +1,8 @@
 {
-  "name": "viacep-brasil-mcp-server",
+  "name": "@edum-compassuol/viacep-brasil-mcp-server",
   "version": "0.1.0",
-  "description": "A Model Context Protocol server",
-  "private": true,
+  "description": "MCP Server para consulta de endereços brasileiros através da API ViaCEP",
+  "private": false,
   "type": "module",
   "bin": {
     "viacep-brasil-mcp-server": "./build/index.js"
@@ -23,5 +23,20 @@
   "devDependencies": {
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3"
+  },
+  "author": {
+    "name": "Eduardo Sausen Mallmann",
+    "email": "eduardo.sausen@compasso.com.br",
+    "url": "https://github.com/edum-compassuol"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edum-compassuol/viacep-brasil-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/edum-compassuol/viacep-brasil-mcp-server/issues"
   }
 }
